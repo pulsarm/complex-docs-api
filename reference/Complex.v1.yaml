@@ -140,11 +140,11 @@ paths:
           name: limit
           description: Ограничение выборки
     parameters: []
-  '/accountingObjects/{objectId}':
+  '/accountingObjects/{id}':
     parameters:
       - schema:
           type: string
-        name: objectId
+        name: id
         in: path
         required: true
         description: Идентификатор объекта учёта
@@ -228,11 +228,11 @@ paths:
           name: session
           description: Идентификатор токена сессии
           required: true
-  '/jobs/{jobId}':
+  '/jobs/{id}':
     parameters:
       - schema:
           type: string
-        name: jobId
+        name: id
         in: path
         required: true
         description: Идентификатор задания
