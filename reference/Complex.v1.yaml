@@ -1,0 +1,103 @@
+openapi: 3.0.0
+info:
+  title: Complex
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /authentication:
+    post:
+      summary: Генерация токена сессии
+      operationId: post-authentication
+      responses:
+        '200':
+          description: 'Данный код возвращается в том случае, если авторизация прошла успешно.'
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Токен сессии
+                properties:
+                  Id:
+                    type: string
+                    description: Идентификатор токена
+                  LifeTime:
+                    type: integer
+                    description: Время жизни токена в секундах
+                  StartedAt:
+                    type: string
+                    description: Дата создания токена
+                required:
+                  - Id
+                  - LifeTime
+                  - StartedAt
+        '403':
+          description: 'Данный код возвращается в том случае, если переданный объект авторизации имел корректную структуру, но пара пользователь/пароль не верные.'
+        '405':
+          description: 'Данный код возвращается в том случае, если не был передан объект авторизации или его содержимое некорректно.'
+      tags:
+        - Авторизация
+      description: Данный метод позволяет генерировать токен сессии для пары логин/пароль. Для этого необходимо в теле запроса передать объект авторизации.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                UserName:
+                  type: string
+                  description: Имя пользователя
+                Password:
+                  type: string
+                  description: Пароль пользователя
+              required:
+                - UserName
+                - Password
+            examples:
+              Объект авторизации:
+                value:
+                  UserName: string
+                  Password: string
+    put:
+      summary: Пролонгация токена сессии
+      operationId: put-authentication
+      responses:
+        '200':
+          description: 'Данный код возвращается в том случае, если пролонгация прошла успешно.'
+        '404':
+          description: 'Данный код возвращается в том случае, если токен сессии с указанным идентификатором не найден.'
+        '405':
+          description: 'Данный код возвращается в том случае, если не был передан объект авторизации или его содержимое некорректно.'
+      description: Данный метод пролонгирует время жизни токена. Для его вызова необходимо передать идентификатор токена сессии.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: session
+          description: Идентификатор токена сессии
+      tags:
+        - Авторизация
+    delete:
+      summary: Завершение времени жизни токена сессии
+      operationId: delete-authentication
+      responses:
+        '200':
+          description: 'Данный код возвращается в том случае, если удалось успешно завершить жизнь токена.'
+        '404':
+          description: 'Данный код возвращается в том случае, если токен сессии с указанным идентификатором не найден.'
+        '405':
+          description: 'Данный код возвращается в том случае, если не был передан объект авторизации или его содержимое некорректно.'
+      description: Данный метод позволят принудительно завершить время жизни токена сессии.
+      tags:
+        - Авторизация
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: session
+          required: true
+          description: Идентификатор токена сессии
+components:
+  schemas: {}
+tags:
+  - name: Авторизация
