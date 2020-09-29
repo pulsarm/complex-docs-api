@@ -4,8 +4,8 @@ info:
   version: '1.0'
   description: Описание методов Web-API ПО Комплекс
   contact:
-    name: Дмитрий Сухоруков
-    email: sukhorukov@pulsarm.ru
+    email: info@pulsarm.ru
+    url: pulsarm.ru
 servers: []
 paths:
   /authentication:
