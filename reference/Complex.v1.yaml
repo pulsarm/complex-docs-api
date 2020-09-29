@@ -3,8 +3,10 @@ info:
   title: Complex
   version: '1.0'
   description: Описание методов Web-API ПО Комплекс
-servers:
-  - url: 'http://localhost:3000'
+  contact:
+    name: Дмитрий Сухоруков
+    email: sukhorukov@pulsarm.ru
+servers: []
 paths:
   /authentication:
     post:
@@ -107,7 +109,59 @@ paths:
           name: session
           required: true
           description: Идентификатор токена сессии
+  accountingObjects:
+    get:
+      summary: Получение списка объектов
+      tags:
+        - Объекты учёта
+      responses:
+        '200':
+          description: 'Данный код возвращается в том случае, если получилось выбрать данные.'
+      operationId: get-accountingObjects
+      description: |-
+        Объекты учёта представляют собой иерархическую структуру. Иными словами у каждого объекта учёта могут быть как родителький объект, так и дочерние объекты.
+
+        Данный метод позволяет получать коллекцию объектов для указанного родительского объекта. Если идентификатор родителя отсутствует, то выборка происходит по верхнему уровню иерархии.
+
+        Для реализации постраничной выборки данных необходимо указывать параметры limit и offset (ограничение и смещение выборки соответственно).
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: parentId
+          description: Идентификатор родительского объекта
+        - schema:
+            type: integer
+          in: query
+          name: offset
+          description: Смещение выборки
+        - schema:
+            type: number
+          in: query
+          name: limit
+          description: Ограничение выборки
+    parameters: []
+  '/accountingObjects/{objectId}':
+    parameters:
+      - schema:
+          type: string
+        name: objectId
+        in: path
+        required: true
+        description: Идентификатор объекта учёта
+    get:
+      summary: Получение объекта учёта
+      tags:
+        - Объекты учёта
+      responses:
+        '200':
+          description: 'Данный код возвращается в том случае, если удалось получить объект учёта.'
+        '404':
+          description: 'Данный код возвращается в том случае, если объект учёта с указанным иденфтикатором отсутствует в базе данных.'
+      operationId: get-accountingObjects-objectId
+      description: Данный метод позволяет получить объект учёта по его идентификатору
 components:
   schemas: {}
 tags:
   - name: Авторизация
+  - name: Объекты учёта
