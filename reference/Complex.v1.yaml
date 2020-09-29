@@ -2,6 +2,7 @@ openapi: 3.0.0
 info:
   title: Complex
   version: '1.0'
+  description: Описание методов Web-API ПО Комплекс
 servers:
   - url: 'http://localhost:3000'
 paths:
@@ -58,6 +59,15 @@ paths:
                 value:
                   UserName: string
                   Password: string
+        description: 'В теле запроса передается объект авторизации, который содержит в себе пару имя пользователя и его пароля.'
+      parameters:
+        - schema:
+            type: string
+            default: application/json
+          in: header
+          name: Content-Type
+          required: true
+          description: Тип передаваемых данных в теле запроса
     put:
       summary: Пролонгация токена сессии
       operationId: put-authentication
