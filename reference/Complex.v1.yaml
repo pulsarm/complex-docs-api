@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Complex
   version: '1.0'
-  description: Описание методов Web-API ПО Комплекс
+  description: Описание методов Web-API ПО Комплекс.
   contact:
     email: info@pulsarm.ru
 servers: []
@@ -159,8 +159,104 @@ paths:
           description: 'Данный код возвращается в том случае, если объект учёта с указанным иденфтикатором отсутствует в базе данных.'
       operationId: get-accountingObjects-objectId
       description: Данный метод позволяет получить объект учёта по его идентификатору
+  /jobs:
+    get:
+      summary: Получение списка заданий
+      tags:
+        - Задания
+      responses:
+        '200':
+          description: Данный код возвращается в случае успешного выполнения метода.
+        '401':
+          description: 'Данный код возвращается в том случае, если в запросе не был передан идентификатор токена сессии'
+      operationId: get-jobs
+      description: Метод возвращает список заданий у которых обновились значения.
+      parameters:
+        - schema:
+            type: boolean
+          in: query
+          name: hasNewValues
+          description: Флаг выборки обновленных заданий
+        - schema:
+            type: string
+          in: query
+          name: session
+          description: Идентификатор токена сессии
+          required: true
+    post:
+      summary: Запуск задания
+      operationId: post-jobs
+      responses:
+        '200':
+          description: 'Данный код возвращается в том случае, если получилось запустить задачу.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Id:
+                    type: string
+                    description: Идентификатор задачи
+                  PointId:
+                    type: integer
+                    description: Идентификатор ресурса
+                required:
+                  - Id
+                  - PointId
+        '401':
+          description: 'Данный код возвращается в том случае, если не был передан токен сессии.'
+        '405':
+          description: 'Данный код возвращается в том случае, если не был указан идентификатор ресурса.'
+      tags:
+        - Задания
+      description: Данный метод запускает задачу опроса ресурса объекта учёта.
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: pointId
+          description: Идентификатор ресурса
+          required: true
+        - schema:
+            type: number
+          in: query
+          name: interval
+          description: Интервал опроса в секундах
+        - schema:
+            type: string
+          in: query
+          name: session
+          description: Идентификатор токена сессии
+          required: true
+  '/jobs/{jobId}':
+    parameters:
+      - schema:
+          type: string
+        name: jobId
+        in: path
+        required: true
+        description: Идентификатор задания
+    get:
+      summary: Получение задания
+      tags:
+        - Задания
+      responses:
+        '200':
+          description: Данный код возвращается в случае успешного выполнения метода.
+        '401':
+          description: 'Данный код возвращается в том случае, если не был передан токен сессии.'
+      operationId: get-jobs-jobId
+      description: Данный метод возвращает информацию о конкретном задании.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: session
+          required: true
+          description: Идентификатор токена сессии
 components:
   schemas: {}
 tags:
   - name: Авторизация
   - name: Объекты учёта
+  - name: Задания
