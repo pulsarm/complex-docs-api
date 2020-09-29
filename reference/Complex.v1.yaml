@@ -5,7 +5,7 @@ info:
   description: Описание методов Web-API ПО Комплекс
   contact:
     email: info@pulsarm.ru
-    url: pulsarm.ru
+    url: 'http://pulsarm.ru'
 servers: []
 paths:
   /authentication:
