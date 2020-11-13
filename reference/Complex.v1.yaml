@@ -2,9 +2,15 @@ openapi: 3.0.0
 info:
   title: Complex
   version: '1.0'
-  description: Описание методов Web-API ПО Комплекс.
+  description: |-
+    Описание методов Web-API ПО Комплекс.
+
+    Данное API предоставляет возможность интеграции внешних сервисов с конфигуратором от НПП Тепловодохран.
+
+    В данном руководстве представлены типичные коды ответов сервера, стандартные методы и примеры ответов.
   contact:
     email: info@pulsarm.ru
+  license: {}
 servers: []
 paths:
   /authentication:
@@ -504,6 +510,7 @@ paths:
           required: true
 components:
   schemas: {}
+  securitySchemes: {}
 tags:
   - name: Авторизация
   - name: Объекты учёта
