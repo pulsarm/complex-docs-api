@@ -33,10 +33,10 @@ paths:
                   - Id
                   - LifeTime
                   - StartedAt
+        '401':
+          description: 'Данный код возвращается в том случае, если не был передан объект авторизации или его содержимое некорректно.'
         '403':
           description: 'Данный код возвращается в том случае, если переданный объект авторизации имел корректную структуру, но пара пользователь/пароль не верные.'
-        '405':
-          description: 'Данный код возвращается в том случае, если не был передан объект авторизации или его содержимое некорректно.'
       tags:
         - Авторизация
       description: Данный метод позволяет генерировать токен сессии для пары логин/пароль. Для этого необходимо в теле запроса передать объект авторизации.
@@ -75,10 +75,10 @@ paths:
       responses:
         '200':
           description: 'Данный код возвращается в том случае, если пролонгация прошла успешно.'
+        '401':
+          description: 'Данный код возвращается в том случае, если не был передан объект авторизации или его содержимое некорректно.'
         '404':
           description: 'Данный код возвращается в том случае, если токен сессии с указанным идентификатором не найден.'
-        '405':
-          description: 'Данный код возвращается в том случае, если не был передан объект авторизации или его содержимое некорректно.'
       description: Данный метод пролонгирует время жизни токена. Для его вызова необходимо передать идентификатор токена сессии.
       parameters:
         - schema:
@@ -94,10 +94,10 @@ paths:
       responses:
         '200':
           description: 'Данный код возвращается в том случае, если удалось успешно завершить жизнь токена.'
+        '401':
+          description: 'Данный код возвращается в том случае, если не был передан объект авторизации или его содержимое некорректно.'
         '404':
           description: 'Данный код возвращается в том случае, если токен сессии с указанным идентификатором не найден.'
-        '405':
-          description: 'Данный код возвращается в том случае, если не был передан объект авторизации или его содержимое некорректно.'
       description: Данный метод позволят принудительно завершить время жизни токена сессии.
       tags:
         - Авторизация
@@ -116,13 +116,37 @@ paths:
       responses:
         '200':
           description: 'Данный код возвращается в том случае, если получилось выбрать данные.'
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Коллекция объектов учёта
+                minItems: 1
+                uniqueItems: true
+                items:
+                  type: object
+                  description: Объект учёта
+                  properties:
+                    Id:
+                      type: number
+                      description: Идентификатор объекта учёта
+                    ParentId:
+                      type: number
+                      description: Идентификатор родительского объекта
+                    Name:
+                      type: string
+                      description: Название
+                  required:
+                    - Id
+                    - ParentId
+                    - Name
       operationId: get-accountingObjects
       description: |-
         Объекты учёта представляют собой иерархическую структуру. Иными словами у каждого объекта учёта могут быть как родителький объект, так и дочерние объекты.
 
-        Данный метод позволяет получать коллекцию объектов для указанного родительского объекта. Если идентификатор родителя отсутствует, то выборка происходит по верхнему уровню иерархии.
+        Данный метод позволяет получать коллекцию объектов как верхнего уровня, так и для указанного родительского объекта. Для этого необходимо передать параметр parentId. Если параметр не будет передан, то происходит выборка по верхнему уровню.
 
-        Для реализации постраничной выборки данных необходимо указывать параметры limit и offset (ограничение и смещение выборки соответственно).
+        Для реализации постраничной выборки данных необходимо указывать параметры limit и offset (ограничение и смещение выборки соответственно). Если отсутствует какой либо из этих параметров, то возвращается полная выборка.
       parameters:
         - schema:
             type: integer
@@ -155,6 +179,47 @@ paths:
       responses:
         '200':
           description: 'Данный код возвращается в том случае, если удалось получить объект учёта.'
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  Id:
+                    type: number
+                    description: Идентификатор объекта учёта
+                  ParentId:
+                    type: number
+                    description: Идентификатор родительского объекта учёта
+                  Name:
+                    type: string
+                    description: Название
+                  ResourceParameters:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    description: Коллекция связанных ресурсов
+                    items:
+                      type: object
+                      properties:
+                        Id:
+                          type: number
+                          description: Идентификатор ресурса
+                        Name:
+                          type: string
+                          description: Название ресурса
+                        AccountingObjectId:
+                          type: number
+                          description: Идентификатор связанного объекта учёта
+                      required:
+                        - Id
+                        - Name
+                        - AccountingObjectId
+                required:
+                  - Id
+                  - ParentId
+                  - Name
+                  - ResourceParameters
         '404':
           description: 'Данный код возвращается в том случае, если объект учёта с указанным иденфтикатором отсутствует в базе данных.'
       operationId: get-accountingObjects-objectId
@@ -243,8 +308,53 @@ paths:
       responses:
         '200':
           description: Данный код возвращается в случае успешного выполнения метода.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  Id:
+                    type: string
+                    minLength: 1
+                    description: Идентификатор задания
+                  PointId:
+                    type: number
+                    description: Идентификатор ресурса
+                  Values:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    description: Коллекция значений для ресурса
+                    items:
+                      type: object
+                      properties:
+                        Value:
+                          oneOf: []
+                          description: Измеренное значение.
+                        TimeStamp:
+                          type: string
+                          minLength: 1
+                          description: Штамп времени
+                        Quality:
+                          type: number
+                          description: Качество значения
+                        DataType:
+                          type: string
+                          minLength: 1
+                          description: Тип данных измеренного значения
+                      required:
+                        - TimeStamp
+                        - Quality
+                        - DataType
+                required:
+                  - Id
+                  - PointId
+                  - Values
         '401':
           description: 'Данный код возвращается в том случае, если не был передан токен сессии.'
+        '404':
+          description: 'Данный код возвращается в случае, если задание не было найдено.'
       operationId: get-jobs-jobId
       description: Данный метод возвращает информацию о конкретном задании.
       parameters:
@@ -254,9 +364,145 @@ paths:
           name: session
           required: true
           description: Идентификатор токена сессии
+    delete:
+      summary: ''
+      operationId: delete-jobs-id
+      responses:
+        '200':
+          description: Данный код возвращается в случае успешного отмены задания.
+        '401':
+          description: Данный код возвращается если не был передан токен сессии или его время жизни истекло.
+        '404':
+          description: 'Данный код возвращается в том случае, если не удалось найти задание с указанным идентификатором.'
+        '520':
+          description: 'Данный код возвращается в том случае, если не удалось отменить выполнение задания.'
+      description: Данный метод отменяет задание по его идентификатору.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: session
+          required: true
+          description: Идентификатор токена сессии
+  '/resourceParameters/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: Идентификатор параметра ресурса
+    get:
+      summary: Получение информации о ресурсе
+      responses:
+        '200':
+          description: Данный код возвращается в случае успешного выполнения метода.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  Id:
+                    type: number
+                    description: Идентификатор ресурса
+                  Name:
+                    type: string
+                    description: Название ресурса
+                  AccountingObjectId:
+                    type: number
+                    description: Идентификатор объекта учета
+                required:
+                  - Id
+                  - Name
+                  - AccountingObjectId
+        '401':
+          description: 'Данный код возвращается в том случае, если не был передан токен сессии.'
+        '404':
+          description: 'Данный код возвращается, если ресурс с указанным идентификатором отсутствует в базе.'
+      operationId: get-resourceParameters-id
+      tags:
+        - Ресурсы объектов учёта
+      description: Возвращает параметр ресурса учёта по его идентификатору
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: session
+          required: true
+          description: Идентификатор токена сессии
+  '/recourceParameters/{id}/archives/{archiveType}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: Идентификатор ресурса
+      - schema:
+          type: string
+        name: archiveType
+        in: path
+        required: true
+        description: Тип получаемого архива
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: Данный код возвращается в случае успешного выполнения метода.
+          content:
+            application/json:
+              schema:
+                type: array
+                description: ''
+                minItems: 1
+                uniqueItems: true
+                items:
+                  type: object
+                  properties:
+                    ResourceId:
+                      type: number
+                      description: Идентификатор ресурса
+                    Date:
+                      type: string
+                      format: date-time
+                      description: Дата
+                    Quality:
+                      type: number
+                      description: Качество данных
+                    Value:
+                      type: number
+                      description: Значение
+                  required:
+                    - ResourceId
+                    - Date
+                    - Quality
+                    - Value
+        '401':
+          description: 'Данный код возвращается в том случае, если не был передан токен сессии.'
+        '404':
+          description: 'Данный код возвращается, если ресурс с указанным идентификатором отсутствует в базе.'
+      operationId: get-recourceParameters-id-archives-archiveType
+      description: |-
+        Получение архивных значений параметров ресурса по его идентификатору. Тип архива является обязательным параметром и может принимать следующие значения:
+        1. random - произвольный тип
+        2. hourly - часовой
+        3. daily - суточный
+        4. monthly - месячный
+        5. half-hour - получасовой
+        6. custom - настраиваемый
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: session
+          description: Идентификатор токена сессии
+          required: true
 components:
   schemas: {}
 tags:
   - name: Авторизация
   - name: Объекты учёта
   - name: Задания
+  - name: Ресурсы объектов учёта
