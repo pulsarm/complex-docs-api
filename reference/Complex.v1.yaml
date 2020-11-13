@@ -365,7 +365,7 @@ paths:
           required: true
           description: Идентификатор токена сессии
     delete:
-      summary: ''
+      summary: Отмена выполнения задания
       operationId: delete-jobs-id
       responses:
         '200':
@@ -384,6 +384,8 @@ paths:
           name: session
           required: true
           description: Идентификатор токена сессии
+      tags:
+        - Задания
   '/resourceParameters/{id}':
     parameters:
       - schema:
@@ -446,8 +448,9 @@ paths:
         required: true
         description: Тип получаемого архива
     get:
-      summary: Your GET endpoint
-      tags: []
+      summary: Получение архивов для ресурса объекта учёта
+      tags:
+        - Ресурсы объектов учёта
       responses:
         '200':
           description: Данный код возвращается в случае успешного выполнения метода.
