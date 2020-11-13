@@ -114,7 +114,7 @@ paths:
           name: session
           required: true
           description: Идентификатор токена сессии
-  /ss/accountingObjects:
+  /accountingObjects:
     get:
       summary: Получение списка объектов
       tags:
